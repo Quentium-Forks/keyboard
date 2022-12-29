@@ -980,6 +980,13 @@ def write(text, delay=0, restore_state_after=True, exact=None, delaymin=0,delaym
                 scan_code, modifiers = next(iter(entries))
             except (KeyError, ValueError, StopIteration):
                 _os_keyboard.type_unicode(letter)
+
+                if delay:
+                    _time.sleep(delay)
+                elif delaymin and delaymax:
+                    random_delay = random.uniform(delaymin, delaymax)
+                    _time.sleep(random_delay)
+
                 continue
             
             for modifier in modifiers:
