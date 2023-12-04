@@ -987,6 +987,8 @@ def write(text, delay=0, restore_state_after=True, exact=None, delaymin=0,delaym
                     random_delay = random.uniform(delaymin, delaymax)
                     _time.sleep(random_delay)
 
+                _time.sleep(max(delay, 0.002))  # needed for macOS to catch up
+
                 continue
 
             for modifier in modifiers:
