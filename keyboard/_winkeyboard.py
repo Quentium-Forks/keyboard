@@ -10,26 +10,14 @@ well documented on Microsoft's website and scattered examples.
 - Keypad numbers still print as numbers even when numlock is off.
 - No way to specify if user wants a keypad key or not in `map_char`.
 """
-from __future__ import unicode_literals
-import re
 import atexit
 from threading import Lock, Thread
-import re
 import traceback
 from collections import defaultdict
+from queue import Queue
 
 from ._keyboard_event import KeyboardEvent, KEY_DOWN, KEY_UP
 from ._canonical_names import normalize_name
-try:
-    # Force Python2 to convert to unicode and not to str.
-    chr = unichr
-except NameError:
-    pass
-
-try:
-    from queue import Queue
-except ImportError:
-    from Queue import Queue
 
 # This part is just declaring Win32 API structures using ctypes. In C
 # this would be simply #include "windows.h".
@@ -37,6 +25,7 @@ except ImportError:
 import ctypes
 from ctypes import c_short, c_char, c_uint8, c_int32, c_int, c_uint, c_uint32, c_long, Structure, CFUNCTYPE, POINTER, WINFUNCTYPE, byref, pointer, sizeof, Union, c_ushort, create_string_buffer, cast
 from ctypes.wintypes import WORD, DWORD, BOOL, HHOOK, MSG, LPWSTR, WCHAR, WPARAM, LPARAM, LONG, HMODULE, HINSTANCE, USHORT, HWND, UINT, HANDLE, LPCWSTR, ULONG, BYTE, HACCEL
+
 LPMSG = POINTER(MSG)
 ULONG_PTR = POINTER(DWORD)
 
@@ -216,7 +205,7 @@ MAPVK_VK_TO_CHAR = 2
 MAPVK_VK_TO_VSC = 0
 MAPVK_VSC_TO_VK = 1
 MAPVK_VK_TO_VSC_EX = 4
-MAPVK_VSC_TO_VK_EX = 3 
+MAPVK_VSC_TO_VK_EX = 3
 
 VkKeyScan = user32.VkKeyScanW
 VkKeyScan.argtypes = [WCHAR]
@@ -572,7 +561,7 @@ def prepare_intercept(callback):
     start_intercept).
     """
     _setup_name_tables()
-    
+
     def process_key(event_type, vk, scan_code, is_extended):
         global shift_is_pressed, altgr_is_pressed, ignore_next_right_alt
         #print(event_type, vk, scan_code, is_extended)
@@ -676,7 +665,7 @@ def listen(callback):
         # if only one callback, assume we will never block and do want device ID
         callback_do_not_block = lambda *args: True
         callback_final = callback
-    
+
     def pair_events():
         while True:
             # print('{} {}'.format(low_level_events.get().scan_code, raw_device_events.get().data.keyboard.scan_code))
@@ -766,7 +755,7 @@ class RawInputDeviceListener(object):
     """
     def __init__(self, callback):
         self.callback = callback
-        
+
         self.hInst = ctypes.windll.kernel32.GetModuleHandleW(0)
 
         self.wndClass = WNDCLASSEX()
@@ -784,7 +773,7 @@ class RawInputDeviceListener(object):
         self.wndClass.hIconSm = 0
 
         self.regRes = user32.RegisterClassExW(byref(self.wndClass))
-        
+
         self.hWnd = user32.CreateWindowExW(
             0,
             self.wndClass.lpszClassName,
@@ -795,7 +784,7 @@ class RawInputDeviceListener(object):
             self.hInst,
             0
         )
-        
+
         if not self.hWnd:
             raise WinError()
 

@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+import unittest
+import time
+
+import keyboard
+from ._keyboard_event import KeyboardEvent, KEY_DOWN, KEY_UP
+
 """
 Side effects are avoided using two techniques:
 
@@ -12,13 +18,6 @@ keyboard,_listener.direct_callback, then, if accepted, appended to
 `output_events`. Fake OS events (keyboard.press) are processed
 and added to `output_events` immediately, mimicking real functionality.
 """
-from __future__ import print_function
-
-import unittest
-import time
-
-import keyboard
-from ._keyboard_event import KeyboardEvent, KEY_DOWN, KEY_UP
 
 dummy_keys = {
     'space': [(0, [])],
@@ -114,7 +113,7 @@ class TestKeyboard(unittest.TestCase):
         keyboard._logically_pressed_keys.clear()
         keyboard._hotkeys.clear()
         keyboard._listener.init()
-        keyboard._word_listeners = {} 
+        keyboard._word_listeners = {}
 
     def do(self, manual_events, expected=None):
         input_events.extend(manual_events)
