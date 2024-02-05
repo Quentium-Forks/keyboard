@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
-
 from time import time as now
 import json
-from ._canonical_names import canonical_names, normalize_name
 
-try:
-    basestring
-except NameError:
-    basestring = str
+from ._canonical_names import normalize_name
 
 KEY_DOWN = 'down'
 KEY_UP = 'up'

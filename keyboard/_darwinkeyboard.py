@@ -1,19 +1,14 @@
+# -*- coding: utf-8 -*-
 import ctypes
 import ctypes.util
 import objc
 import Quartz
 import time
-import os
-import threading
 from AppKit import NSEvent
-from ._keyboard_event import KeyboardEvent, KEY_DOWN, KEY_UP
-from ._canonical_names import normalize_name
 from collections import defaultdict
 
-try: # Python 2/3 compatibility
-    unichr
-except NameError:
-    unichr = chr
+from ._keyboard_event import KeyboardEvent, KEY_DOWN, KEY_UP
+from ._canonical_names import normalize_name
 
 Carbon = ctypes.cdll.LoadLibrary(ctypes.util.find_library('Carbon'))
 
@@ -220,7 +215,7 @@ class KeyMap(object):
                                            ctypes.byref(char_count),
                                            non_modified_char)
 
-            non_modified_key = u''.join(unichr(non_modified_char[i]) for i in range(char_count.value))
+            non_modified_key = u''.join(chr(non_modified_char[i]) for i in range(char_count.value))
 
             retval = Carbon.UCKeyTranslate(k_layout_buffer,
                                            key_code,
@@ -233,7 +228,7 @@ class KeyMap(object):
                                            ctypes.byref(char_count),
                                            shifted_char)
 
-            shifted_key = u''.join(unichr(shifted_char[i]) for i in range(char_count.value))
+            shifted_key = u''.join(chr(shifted_char[i]) for i in range(char_count.value))
 
             retval = Carbon.UCKeyTranslate(k_layout_buffer,
                                            key_code,
@@ -246,7 +241,7 @@ class KeyMap(object):
                                            ctypes.byref(char_count),
                                            option_char)
 
-            option_key = u''.join(unichr(option_char[i]) for i in range(char_count.value))
+            option_key = u''.join(chr(option_char[i]) for i in range(char_count.value))
 
             retval = Carbon.UCKeyTranslate(k_layout_buffer,
                                            key_code,
@@ -259,7 +254,7 @@ class KeyMap(object):
                                            ctypes.byref(char_count),
                                            option_shifted_char)
 
-            option_shifted_key = u''.join(unichr(option_shifted_char[i]) for i in range(char_count.value))
+            option_shifted_key = u''.join(chr(option_shifted_char[i]) for i in range(char_count.value))
 
             self.layout_specific_keys[key_code] = (non_modified_key, shifted_key, option_key, option_shifted_key)
         # Cleanup

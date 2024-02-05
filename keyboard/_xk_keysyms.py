@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # taken from /usr/include/X11/keysymdef.h
 
 XK_KEYSYM_SYMBOLS = {
