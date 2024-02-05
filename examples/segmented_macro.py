@@ -6,10 +6,13 @@ It's useful for presentations, to ensure typing accuracy while still giving you
 time to speak between segments.
 """
 import sys
+
 sys.path.append('../')
-import keyboard
-import pickle
+
 import os
+import pickle
+
+import keyboard
 
 if len(sys.argv) == 1:
     filename = input('Enter filename to save/load events: ')
