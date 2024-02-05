@@ -2,7 +2,7 @@
 branch = True
 
 [report]
-exclude_lines =
+exclude_also =
     pragma: no cover
 
     pass
@@ -13,9 +13,9 @@ exclude_lines =
 
     if __name__ == .__main__.:
 
-    from. import
+    from . import
 
-    import 
+    import
 
     except ImportError:
 
