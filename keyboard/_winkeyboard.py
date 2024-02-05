@@ -45,13 +45,10 @@ GetModuleHandleW = kernel32.GetModuleHandleW
 GetModuleHandleW.restype = HMODULE
 GetModuleHandleW.argtypes = [LPCWSTR]
 
-#https://github.com/boppreh/mouse/issues/1
-#user32 = ctypes.windll.user32
 user32 = ctypes.WinDLL('user32', use_last_error = True)
 
 VK_PACKET = 0xE7
 
-INPUT_MOUSE = 0
 INPUT_KEYBOARD = 1
 INPUT_HARDWARE = 2
 
@@ -64,15 +61,6 @@ class KBDLLHOOKSTRUCT(Structure):
                 ("flags", DWORD),
                 ("time", c_int),
                 ("dwExtraInfo", ULONG_PTR)]
-
-# Included for completeness.
-class MOUSEINPUT(Structure):
-    _fields_ = (('dx', LONG),
-                ('dy', LONG),
-                ('mouseData', DWORD),
-                ('dwFlags', DWORD),
-                ('time', DWORD),
-                ('dwExtraInfo', ULONG_PTR))
 
 class KEYBDINPUT(Structure):
     _fields_ = (('vk_code', WORD),
@@ -87,8 +75,7 @@ class HARDWAREINPUT(Structure):
                 ('wParamH', WORD))
 
 class _INPUTunion(Union):
-    _fields_ = (('mi', MOUSEINPUT),
-                ('ki', KEYBDINPUT),
+    _fields_ = (('ki', KEYBDINPUT),
                 ('hi', HARDWAREINPUT))
 
 class INPUT(Structure):
@@ -110,7 +97,6 @@ WHITE_BRUSH = 0
 RI_KEY_BREAK = 0x01
 RI_KEY_MAKE = 0x00
 
-RIM_TYPEMOUSE = 0x00000000
 RIM_TYPEKEYBOARD = 0x00000001
 RIM_TYPEHID = 0x00000002
 
@@ -138,29 +124,8 @@ class RAWINPUTHEADER(Structure):
         ("dwSize", DWORD),
         ("hDevice", HANDLE),
         ("wParam", WPARAM),
-    ] 
-
-class RAWMOUSE(Structure):
-    class _U1(Union):
-        class _S2(Structure):
-            _fields_ = [
-                ("usButtonFlags", c_ushort),
-                ("usButtonData", c_ushort),
-            ]
-        _fields_ = [
-            ("ulButtons", ULONG),
-            ("_s2", _S2),
-        ]
-
-    _fields_ = [
-        ("usFlags", c_ushort),
-        ("_u1", _U1),
-        ("ulRawButtons", ULONG),
-        ("lLastX", LONG),
-        ("lLastY", LONG),
-        ("ulExtraInformation", ULONG),
     ]
-    _anonymous_ = ("_u1", )   
+
 
 class RAWKEYBOARD(Structure):
     _fields_ = [
@@ -182,7 +147,6 @@ class RAWHID(Structure):
 
 class _RAWINPUTUnion(Union):
     _fields_ = [
-        ("mouse", RAWMOUSE),
         ("keyboard", RAWKEYBOARD),
         ("hid", RAWHID),
     ]
