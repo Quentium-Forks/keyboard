@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-version = '0.13.5'
+version = '1.0.0'
 
 import re as _re
 import itertools as _itertools

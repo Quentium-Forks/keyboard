@@ -1,9 +1,21 @@
-# 0.13.6
+# 1.0.0
 
+- [Linux] Fix event listener fails when keyboard is disconnected momentarily.
+- [Windows] Fix for "left windows" pressing/releasing properly.
+- [All] Added new feature. Random delay in write() function.
+- [Linux] Update 'Known Limitations' for Linux.
+- [All] Fix write work with delay.
+- [Mac] Fix bug for Mac OS Ventura where value of event.name is None.
+- [Windows] Better raw device handling.
+- [Windows] Allow getting events with device ID when not blocking.
+- [Windows] Update winkeyboard, load non qwerty special characters.
 - [Mac] Fix macOS initial mapping of layout specific keys.
 - [Mac] Added 'option+key' and 'option+shift+key' characters to initial mapping.
 - [Mac] Minimum 2 ms delay per character in type_unicode method on non-Windows (affects keyboard.write for characters not present on the keyboard).
 - [Mac] 'command' and 'option' can both be sided. They can also be called by the Windows counterpart 'windows' and 'alt'.
+- [All] Removed mouse implementation (independant project).
+- [All] Removed Python 2 support & reorganized imports.
+- [All] Cleaned examples & uniformized code style.
 
 
 # 0.13.5
