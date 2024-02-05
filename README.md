@@ -1,25 +1,3 @@
-## macOS changes from original repository:
-- Tested on macOS Ventura and macOS Sonoma.
-- Fixed interrupted typing of certain types of strings.
-    - Initial mapping of layout specific keys was fixed. It now also includes 'option+key' and 'option+shift+key' characters.
-    - Typing of characters not present on the keyboard have a fixed minimum delay of 2 ms.
-      If you still encounter the error, please let me know. Try the below command with increased delay.
-      - `keyboard.write('macOS（/ˌmækʔoʊˈɛs/[7]；2011年及之前称 Mac OS X，2012年至2015年称 OS X）', delay=0.002)`
-- 'command' and 'option' keys can be sided (e.g. 'left command'), and also be called by their Windows counterparts, e.g. 'left windows', 'alt'. (Requirement for Drvless)
-
-Known constraints:
-- It seems the 'right ctrl' key does not exist on a Mac keyboard. `keyboard.press('right ctrl')` will do nothing, please use `keyboard.press('left ctrl')` or `keyboard.press('ctrl')` instead. However, `keyboard.add_hotkey('right ctrl')` can work with an external keyboard.
-
-
-BELOW IS THE ORIGINAL README
-========
-
-**This project is currently unmaintained. It works for many cases, and I wish to pick it up again in the future, but you might encounter some friction and limited features using it.**
-
----
-
----
-
 keyboard
 ========
 
@@ -214,53 +192,74 @@ input('Press enter to continue...')
 # API
 #### Table of Contents
 
-- [keyboard.**KEY\_DOWN**](#keyboard.KEY_DOWN)
-- [keyboard.**KEY\_UP**](#keyboard.KEY_UP)
-- [keyboard.**KeyboardEvent**](#keyboard.KeyboardEvent)
-- [keyboard.**all\_modifiers**](#keyboard.all_modifiers)
-- [keyboard.**sided\_modifiers**](#keyboard.sided_modifiers)
-- [keyboard.**version**](#keyboard.version)
-- [keyboard.**is\_modifier**](#keyboard.is_modifier)
-- [keyboard.**key\_to\_scan\_codes**](#keyboard.key_to_scan_codes)
-- [keyboard.**parse\_hotkey**](#keyboard.parse_hotkey)
-- [keyboard.**send**](#keyboard.send) *(aliases: `press_and_release`)*
-- [keyboard.**press**](#keyboard.press)
-- [keyboard.**release**](#keyboard.release)
-- [keyboard.**is\_pressed**](#keyboard.is_pressed)
-- [keyboard.**call\_later**](#keyboard.call_later)
-- [keyboard.**hook**](#keyboard.hook)
-- [keyboard.**on\_press**](#keyboard.on_press)
-- [keyboard.**on\_release**](#keyboard.on_release)
-- [keyboard.**hook\_key**](#keyboard.hook_key)
-- [keyboard.**on\_press\_key**](#keyboard.on_press_key)
-- [keyboard.**on\_release\_key**](#keyboard.on_release_key)
-- [keyboard.**unhook**](#keyboard.unhook) *(aliases: `unblock_key`, `unhook_key`, `unremap_key`)*
-- [keyboard.**unhook\_all**](#keyboard.unhook_all)
-- [keyboard.**block\_key**](#keyboard.block_key)
-- [keyboard.**remap\_key**](#keyboard.remap_key)
-- [keyboard.**parse\_hotkey\_combinations**](#keyboard.parse_hotkey_combinations)
-- [keyboard.**add\_hotkey**](#keyboard.add_hotkey) *(aliases: `register_hotkey`)*
-- [keyboard.**remove\_hotkey**](#keyboard.remove_hotkey) *(aliases: `clear_hotkey`, `unregister_hotkey`, `unremap_hotkey`)*
-- [keyboard.**unhook\_all\_hotkeys**](#keyboard.unhook_all_hotkeys) *(aliases: `clear_all_hotkeys`, `remove_all_hotkeys`, `unregister_all_hotkeys`)*
-- [keyboard.**remap\_hotkey**](#keyboard.remap_hotkey)
-- [keyboard.**stash\_state**](#keyboard.stash_state)
-- [keyboard.**restore\_state**](#keyboard.restore_state)
-- [keyboard.**restore\_modifiers**](#keyboard.restore_modifiers)
-- [keyboard.**write**](#keyboard.write)
-- [keyboard.**wait**](#keyboard.wait)
-- [keyboard.**get\_hotkey\_name**](#keyboard.get_hotkey_name)
-- [keyboard.**read\_event**](#keyboard.read_event)
-- [keyboard.**read\_key**](#keyboard.read_key)
-- [keyboard.**read\_hotkey**](#keyboard.read_hotkey)
-- [keyboard.**get\_typed\_strings**](#keyboard.get_typed_strings)
-- [keyboard.**start\_recording**](#keyboard.start_recording)
-- [keyboard.**stop\_recording**](#keyboard.stop_recording)
-- [keyboard.**record**](#keyboard.record)
-- [keyboard.**play**](#keyboard.play) *(aliases: `replay`)*
-- [keyboard.**add\_word\_listener**](#keyboard.add_word_listener) *(aliases: `register_word_listener`)*
-- [keyboard.**remove\_word\_listener**](#keyboard.remove_word_listener) *(aliases: `remove_abbreviation`)*
-- [keyboard.**add\_abbreviation**](#keyboard.add_abbreviation) *(aliases: `register_abbreviation`)*
-- [keyboard.**normalize\_name**](#keyboard.normalize_name)
+- [keyboard](#keyboard)
+  - [Features](#features)
+  - [Usage](#usage)
+  - [Example](#example)
+  - [Known limitations:](#known-limitations)
+  - [Common patterns and mistakes](#common-patterns-and-mistakes)
+    - [Preventing the program from closing](#preventing-the-program-from-closing)
+    - [Waiting for a key press one time](#waiting-for-a-key-press-one-time)
+    - [Repeatedly waiting for a key press](#repeatedly-waiting-for-a-key-press)
+    - [Invoking code when an event happens](#invoking-code-when-an-event-happens)
+    - ['Press any key to continue'](#press-any-key-to-continue)
+- [API](#api)
+      - [Table of Contents](#table-of-contents)
+  - [keyboard.**KEY\_DOWN**](#keyboardkey_down)
+  - [keyboard.**KEY\_UP**](#keyboardkey_up)
+  - [class keyboard.**KeyboardEvent**](#class-keyboardkeyboardevent)
+    - [KeyboardEvent.**device**](#keyboardeventdevice)
+    - [KeyboardEvent.**event\_type**](#keyboardeventevent_type)
+    - [KeyboardEvent.**is\_keypad**](#keyboardeventis_keypad)
+    - [KeyboardEvent.**modifiers**](#keyboardeventmodifiers)
+    - [KeyboardEvent.**name**](#keyboardeventname)
+    - [KeyboardEvent.**scan\_code**](#keyboardeventscan_code)
+    - [KeyboardEvent.**time**](#keyboardeventtime)
+    - [KeyboardEvent.**to\_json**(self, ensure\_ascii=False)](#keyboardeventto_jsonself-ensure_asciifalse)
+  - [keyboard.**all\_modifiers**](#keyboardall_modifiers)
+  - [keyboard.**sided\_modifiers**](#keyboardsided_modifiers)
+  - [keyboard.**version**](#keyboardversion)
+  - [keyboard.**is\_modifier**(key)](#keyboardis_modifierkey)
+  - [keyboard.**key\_to\_scan\_codes**(key, error\_if\_missing=True)](#keyboardkey_to_scan_codeskey-error_if_missingtrue)
+  - [keyboard.**parse\_hotkey**(hotkey)](#keyboardparse_hotkeyhotkey)
+  - [keyboard.**send**(hotkey, do\_press=True, do\_release=True)](#keyboardsendhotkey-do_presstrue-do_releasetrue)
+  - [keyboard.**press**(hotkey)](#keyboardpresshotkey)
+  - [keyboard.**release**(hotkey)](#keyboardreleasehotkey)
+  - [keyboard.**is\_pressed**(hotkey)](#keyboardis_pressedhotkey)
+  - [keyboard.**call\_later**(fn, args=(), delay=0.001)](#keyboardcall_laterfn-args-delay0001)
+  - [keyboard.**hook**(callback, suppress=False, on\_remove=\<lambda\>)](#keyboardhookcallback-suppressfalse-on_removelambda)
+  - [keyboard.**on\_press**(callback, suppress=False)](#keyboardon_presscallback-suppressfalse)
+  - [keyboard.**on\_release**(callback, suppress=False)](#keyboardon_releasecallback-suppressfalse)
+  - [keyboard.**hook\_key**(key, callback, suppress=False)](#keyboardhook_keykey-callback-suppressfalse)
+  - [keyboard.**on\_press\_key**(key, callback, suppress=False)](#keyboardon_press_keykey-callback-suppressfalse)
+  - [keyboard.**on\_release\_key**(key, callback, suppress=False)](#keyboardon_release_keykey-callback-suppressfalse)
+  - [keyboard.**unhook**(remove)](#keyboardunhookremove)
+  - [keyboard.**unhook\_all**()](#keyboardunhook_all)
+  - [keyboard.**block\_key**(key)](#keyboardblock_keykey)
+  - [keyboard.**remap\_key**(src, dst)](#keyboardremap_keysrc-dst)
+  - [keyboard.**parse\_hotkey\_combinations**(hotkey)](#keyboardparse_hotkey_combinationshotkey)
+  - [keyboard.**add\_hotkey**(hotkey, callback, args=(), suppress=False, timeout=1, trigger\_on\_release=False)](#keyboardadd_hotkeyhotkey-callback-args-suppressfalse-timeout1-trigger_on_releasefalse)
+  - [keyboard.**remove\_hotkey**(hotkey\_or\_callback)](#keyboardremove_hotkeyhotkey_or_callback)
+  - [keyboard.**unhook\_all\_hotkeys**()](#keyboardunhook_all_hotkeys)
+  - [keyboard.**remap\_hotkey**(src, dst, suppress=True, trigger\_on\_release=False)](#keyboardremap_hotkeysrc-dst-suppresstrue-trigger_on_releasefalse)
+  - [keyboard.**stash\_state**()](#keyboardstash_state)
+  - [keyboard.**restore\_state**(scan\_codes)](#keyboardrestore_statescan_codes)
+  - [keyboard.**restore\_modifiers**(scan\_codes)](#keyboardrestore_modifiersscan_codes)
+  - [keyboard.**write**(text, delay=0, restore\_state\_after=True, exact=None, delaymin=0,delaymax=0)](#keyboardwritetext-delay0-restore_state_aftertrue-exactnone-delaymin0delaymax0)
+  - [keyboard.**wait**(hotkey=None, suppress=False, trigger\_on\_release=False)](#keyboardwaithotkeynone-suppressfalse-trigger_on_releasefalse)
+  - [keyboard.**get\_hotkey\_name**(names=None)](#keyboardget_hotkey_namenamesnone)
+  - [keyboard.**read\_event**(suppress=False)](#keyboardread_eventsuppressfalse)
+  - [keyboard.**read\_key**(suppress=False)](#keyboardread_keysuppressfalse)
+  - [keyboard.**read\_hotkey**(suppress=True)](#keyboardread_hotkeysuppresstrue)
+  - [keyboard.**get\_typed\_strings**(events, allow\_backspace=True)](#keyboardget_typed_stringsevents-allow_backspacetrue)
+  - [keyboard.**start\_recording**(recorded\_events\_queue=None)](#keyboardstart_recordingrecorded_events_queuenone)
+  - [keyboard.**stop\_recording**()](#keyboardstop_recording)
+  - [keyboard.**record**(until='escape', suppress=False, trigger\_on\_release=False)](#keyboardrecorduntilescape-suppressfalse-trigger_on_releasefalse)
+  - [keyboard.**play**(events, speed\_factor=1.0)](#keyboardplayevents-speed_factor10)
+  - [keyboard.**add\_word\_listener**(word, callback, triggers=\['space'\], match\_suffix=False, timeout=2)](#keyboardadd_word_listenerword-callback-triggersspace-match_suffixfalse-timeout2)
+  - [keyboard.**remove\_word\_listener**(word\_or\_handler)](#keyboardremove_word_listenerword_or_handler)
+  - [keyboard.**add\_abbreviation**(source\_text, replacement\_text, match\_suffix=False, timeout=2)](#keyboardadd_abbreviationsource_text-replacement_text-match_suffixfalse-timeout2)
+  - [keyboard.**normalize\_name**(name)](#keyboardnormalize_namename)
 
 
 <a name="keyboard.KEY_DOWN"/>
@@ -348,7 +347,7 @@ input('Press enter to continue...')
 
 ## keyboard.**version**
 ```py
-= '0.13.5'
+= '1.0.0'
 ```
 
 <a name="keyboard.is_modifier"/>
@@ -430,7 +429,7 @@ Note: keys are released in the opposite order they were pressed.
 
 [\[source\]](https://github.com/boppreh/keyboard/blob/master/keyboard/__init__.py#L501)
 
-Presses and holds down a hotkey (see [`send`](#keyboard.send)). 
+Presses and holds down a hotkey (see [`send`](#keyboard.send)).
 
 
 <a name="keyboard.release"/>
@@ -439,7 +438,7 @@ Presses and holds down a hotkey (see [`send`](#keyboard.send)).
 
 [\[source\]](https://github.com/boppreh/keyboard/blob/master/keyboard/__init__.py#L505)
 
-Releases a hotkey (see [`send`](#keyboard.send)). 
+Releases a hotkey (see [`send`](#keyboard.send)).
 
 
 <a name="keyboard.is_pressed"/>
@@ -757,7 +756,7 @@ the text is typed, and modifiers are restored afterwards.
 
 - `delay` is the number of seconds to wait between keypresses, defaults to
 no delay.
-- `delaymin` and `delaymax` are used when you want a dynamic delay. When delay 
+- `delaymin` and `delaymax` are used when you want a dynamic delay. When delay
 variable given, `delaymin` and `delaymax` will be ignored.
 - `restore_state_after` can be used to restore the state of pressed keys
 after the text is typed, i.e. presses the keys that were released at the
